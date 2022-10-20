@@ -119,6 +119,10 @@ func (s *CmtRPCService) GetBlockByNumber(height uint64, decodeTx bool) (*ctypes.
 	return block, nil
 }
 
+func (s *CmtRPCService) GetTest(height uint64, decodeTx bool) (string, error) {
+	return "vulcanlabs", nil
+}
+
 // RPCTransaction represents a transaction that will serialize to the RPC representation of a transaction
 type RPCTransaction struct {
 	BlockNumber      *hexutil.Big           `json:"blockNumber"`
