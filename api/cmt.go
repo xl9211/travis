@@ -121,6 +121,9 @@ func (s *CmtRPCService) GetBlockByNumber(height uint64, decodeTx bool) (*ctypes.
 
 func (s *CmtRPCService) GetBalance(address common.Address) (string, error) {
 	state, err := s.backend.Ethereum().BlockChain().State()
+	if err != nil {
+		return "", err
+	}
 	balance := state.GetBalance(address)
 	return balance.String(), nil
 }
