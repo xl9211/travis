@@ -139,13 +139,17 @@ func (s *CmtRPCService) GetNonce(address common.Address) (string, error) {
 	return strconv.FormatUint(nonce, 10), nil
 }
 
-func (s *CmtRPCService) GetStorage(address common.Address) (string, error) {
+func (s *CmtRPCService) GetStorage1(address common.Address) (string, error) {
 	state, err := s.backend.Ethereum().BlockChain().State()
 	if err != nil {
 		return "", err
 	}
 
 	storageTrie := state.StorageTrie(address)
+	if storageTrie == nil {
+		return "storage trie nil", err
+	}
+
 	hash := storageTrie.Hash()
 	return hash.TerminalString(), nil
 }
@@ -157,6 +161,9 @@ func (s *CmtRPCService) GetStorage2(address common.Address) (string, error) {
 	}
 
 	storageTrie := state.StorageTrie(address)
+	if storageTrie == nil {
+		return "storage trie nil", err
+	}
 
 	var storage map[string]string
 	storageIt := trie.NewIterator(storageTrie.NodeIterator(nil))
