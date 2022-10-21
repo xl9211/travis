@@ -147,7 +147,7 @@ func (s *CmtRPCService) GetStorage(address common.Address) (string, error) {
 
 	storageTrie := state.StorageTrie(address)
 	hash := storageTrie.Hash()
-	return string(hash), nil
+	return hash.TerminalString(), nil
 }
 
 func (s *CmtRPCService) GetStorage2(address common.Address) (string, error) {
