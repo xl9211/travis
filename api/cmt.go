@@ -140,13 +140,25 @@ func (s *CmtRPCService) GetNonce(address common.Address) (string, error) {
 }
 
 func (s *CmtRPCService) GetStorage(address common.Address) (string, error) {
-	var storage map[string]string
 	state, err := s.backend.Ethereum().BlockChain().State()
 	if err != nil {
 		return "", err
 	}
 
 	storageTrie := state.StorageTrie(address)
+	hash := storageTrie.Hash()
+	return string(hash), nil
+}
+
+func (s *CmtRPCService) GetStorage2(address common.Address) (string, error) {
+	state, err := s.backend.Ethereum().BlockChain().State()
+	if err != nil {
+		return "", err
+	}
+
+	storageTrie := state.StorageTrie(address)
+
+	var storage map[string]string
 	storageIt := trie.NewIterator(storageTrie.NodeIterator(nil))
 	for storageIt.Next() {
 		storage[common.Bytes2Hex(storageTrie.GetKey(storageIt.Key))] = common.Bytes2Hex(storageIt.Value)
@@ -155,7 +167,7 @@ func (s *CmtRPCService) GetStorage(address common.Address) (string, error) {
 	data, _ := json.Marshal(storage)
 	dataString := string(data)
 
-	return dataString, err
+	return dataString, nil
 }
 
 // RPCTransaction represents a transaction that will serialize to the RPC representation of a transaction
