@@ -136,7 +136,7 @@ func (s *CmtRPCService) GetNonce(address common.Address) (string, error) {
 		return "", err
 	}
 	nonce := state.GetNonce(address)
-	return strconv.FormatInt(nonce, 10), nil
+	return strconv.FormatUint(nonce, 10), nil
 }
 
 func (s *CmtRPCService) GetStorage(address common.Address) (map[string]string, error) {
