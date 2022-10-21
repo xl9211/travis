@@ -120,7 +120,8 @@ func (s *CmtRPCService) GetBlockByNumber(height uint64, decodeTx bool) (*ctypes.
 }
 
 func (s *CmtRPCService) GetTest(address common.Address) (string, error) {
-	balance := s.backend.es.work.GetBalance(address)
+	state := s.backend.DeliverTxState()
+	balance := state.GetBalance(address)
 	return balance.String(), nil
 }
 
