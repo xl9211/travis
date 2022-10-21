@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"strconv"
 
 	"github.com/spf13/cast"
 
@@ -16,6 +17,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	ethTypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/ethereum/go-ethereum/trie"
 	abci "github.com/tendermint/tendermint/abci/types"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	tmcmn "github.com/tendermint/tendermint/libs/common"
@@ -126,6 +128,31 @@ func (s *CmtRPCService) GetBalance(address common.Address) (string, error) {
 	}
 	balance := state.GetBalance(address)
 	return balance.String(), nil
+}
+
+func (s *CmtRPCService) GetNonce(address common.Address) (string, error) {
+	state, err := s.backend.Ethereum().BlockChain().State()
+	if err != nil {
+		return "", err
+	}
+	nonce := state.GetNonce(address)
+	return strconv.FormatInt(nonce, 10), nil
+}
+
+func (s *CmtRPCService) GetStorage(address common.Address) (map[string]string, error) {
+	var storage map[string]string
+	state, err := s.backend.Ethereum().BlockChain().State()
+	if err != nil {
+		return nil, err
+	}
+
+	storageTrie := state.StorageTrie(address)
+	storageIt := trie.NewIterator(storageTrie.NodeIterator(nil))
+	for storageIt.Next() {
+		storage[common.Bytes2Hex(storageTrie.GetKey(storageIt.Key))] = common.Bytes2Hex(storageIt.Value)
+	}
+
+	return storage, err
 }
 
 // RPCTransaction represents a transaction that will serialize to the RPC representation of a transaction
