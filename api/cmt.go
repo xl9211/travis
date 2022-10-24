@@ -130,6 +130,15 @@ func (s *CmtRPCService) GetBalance(address common.Address) (string, error) {
 	return balance.String(), nil
 }
 
+func (s *CmtRPCService) GetCode(address common.Address) (string, error) {
+	state, err := s.backend.Ethereum().BlockChain().State()
+	if err != nil {
+		return "", err
+	}
+	code := state.GetCode(address)
+	return string(code), nil
+}
+
 func (s *CmtRPCService) GetNonce(address common.Address) (string, error) {
 	state, err := s.backend.Ethereum().BlockChain().State()
 	if err != nil {
