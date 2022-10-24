@@ -182,7 +182,7 @@ func (s *CmtRPCService) GetStorage2(address common.Address) (string, error) {
 
 	var storage map[string]string
 	state.ForEachStorage(address, func(key, val common.Hash) bool {
-		storage[common.Bytes2Hex(key)] = common.Bytes2Hex(val)
+		storage[key.Hex()] = val.Hex()
 		return true
 	})
 
