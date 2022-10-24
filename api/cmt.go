@@ -180,14 +180,20 @@ func (s *CmtRPCService) GetStorage2(address common.Address) (string, error) {
 	// 	storage[common.Bytes2Hex(storageIt.Key)] = common.Bytes2Hex(storageIt.Value)
 	// }
 
+	fmt.Printf("VULCANLABS Address: {%x}\n", address)
 	var storage map[string]string
 	state.ForEachStorage(address, func(key, val common.Hash) bool {
+		fmt.Printf("VULCANLABS key: %s value: %s\n", key.Hex(), val.Hex())
 		storage[key.Hex()] = val.Hex()
 		return true
 	})
 
+	fmt.Printf("VULCANLABS Result Address: {%x}\n", address)
+
 	data, _ := json.Marshal(storage)
 	dataString := string(data)
+
+	fmt.Printf("VULCANLABS data: %s\n", dataString)
 
 	return dataString, nil
 }
