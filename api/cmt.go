@@ -177,7 +177,7 @@ func (s *CmtRPCService) GetStorage2(address common.Address) (string, error) {
 	var storage map[string]string
 	storageIt := trie.NewIterator(storageTrie.NodeIterator(nil))
 	for storageIt.Next() {
-		storage[common.Bytes2Hex(state.trie.GetKey(storageIt.Key))] = common.Bytes2Hex(storageIt.Value)
+		storage[common.Bytes2Hex(storageIt.Key)] = common.Bytes2Hex(storageIt.Value)
 	}
 
 	data, _ := json.Marshal(storage)
