@@ -169,7 +169,8 @@ func (s *CmtRPCService) GetStorage2(address common.Address) (string, error) {
 		return "", err
 	}
 
-	storageTrie := state.StorageTrie(address)
+	stateObject := state.GetOrNewStateObject(address)
+	storageTrie := stateObject.getTrie(state.Database())
 	if storageTrie == nil {
 		return "storage trie nil", err
 	}
