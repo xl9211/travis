@@ -184,7 +184,7 @@ func (s *CmtRPCService) GetStorage2(address common.Address) (string, error) {
 	var storage map[string]string
 	state.ForEachStorage(address, func(key, val common.Hash) bool {
 		fmt.Printf("VULCANLABS key: %s value: %s\n", key.Hex(), val.Hex())
-		storage[key.Hex()] = val.Hex()
+		// storage[key.Hex()] = val.Hex()
 		return true
 	})
 
