@@ -17,6 +17,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	ethTypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/ethereum/go-ethereum/trie"
 	abci "github.com/tendermint/tendermint/abci/types"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	tmcmn "github.com/tendermint/tendermint/libs/common"
@@ -153,13 +154,21 @@ func (s *CmtRPCService) GetStorage1(address common.Address) (string, error) {
 		return "", err
 	}
 
-	storageTrie := state.StorageTrie(address)
+	storageTrie := state.StorageTrie()
 	if storageTrie == nil {
 		return "storage trie nil", err
 	}
 
-	hash := storageTrie.Hash()
-	return hash.TerminalString(), nil
+	storage := make(map[string]string)
+	storageIt := trie.NewIterator(storageTrie.NodeIterator(nil))
+	for storageIt.Next() {
+		storage[common.Bytes2Hex(storageIt.Key)] = common.Bytes2Hex(storageIt.Value)
+	}
+
+	data, _ := json.Marshal(storage)
+	dataString := string(data)
+
+	return dataString, nil
 }
 
 func (s *CmtRPCService) GetStorage2(address common.Address) (string, error) {
@@ -167,18 +176,6 @@ func (s *CmtRPCService) GetStorage2(address common.Address) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	// stateObject := state.GetOrNewStateObject(address)
-	// storageTrie := stateObject.getTrie(state.Database())
-	// if storageTrie == nil {
-	// 	return "storage trie nil", err
-	// }
-
-	// var storage map[string]string
-	// storageIt := trie.NewIterator(storageTrie.NodeIterator(nil))
-	// for storageIt.Next() {
-	// 	storage[common.Bytes2Hex(storageIt.Key)] = common.Bytes2Hex(storageIt.Value)
-	// }
 
 	fmt.Printf("VULCANLABS Address: {%x}\n", address)
 	storage := make(map[string]string)
