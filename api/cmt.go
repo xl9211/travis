@@ -15,6 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	ethState "github.com/ethereum/go-ethereum/core/state"
 	ethTypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
@@ -145,7 +146,7 @@ func (s *CmtRPCService) GetAllAccountByAddress(address common.Address) (string, 
 		return "", err
 	}
 
-	account := DumpAccount{
+	account := ethState.DumpAccount{
 		Balance: state.GetBalance(address).String(),
 		Nonce:   state.GetNonce(address),
 		Code:    common.Bytes2Hex(state.GetCode(address)),
