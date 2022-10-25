@@ -140,7 +140,7 @@ func (s *CmtRPCService) GetAllAddress() (string, error) {
 	return dataString, nil
 }
 
-func (s *CmtRPCService) GetAllAccountByAddress(address common.Address) (string, error) {
+func (s *CmtRPCService) GetAccountByAddress(address common.Address) (string, error) {
 	state, err := s.backend.Ethereum().BlockChain().State()
 	if err != nil {
 		return "", err
