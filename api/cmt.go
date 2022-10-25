@@ -139,6 +139,30 @@ func (s *CmtRPCService) GetAllAddress() (string, error) {
 	return dataString, nil
 }
 
+func (s *CmtRPCService) GetAllAccountByAddress(address common.Address) (string, error) {
+	state, err := s.backend.Ethereum().BlockChain().State()
+	if err != nil {
+		return "", err
+	}
+
+	account := DumpAccount{
+		Balance: state.GetBalance(address).String(),
+		Nonce:   state.GetNonce(address),
+		Code:    common.Bytes2Hex(state.GetCode(address)),
+		Storage: make(map[string]string),
+	}
+
+	state.ForEachStorage(address, func(key, val common.Hash) bool {
+		account.Storage[key.Hex()] = val.Hex()
+		return true
+	})
+
+	data, _ := json.Marshal(account)
+	dataString := string(data)
+
+	return dataString, nil
+}
+
 func (s *CmtRPCService) GetBalance(address common.Address) (string, error) {
 	state, err := s.backend.Ethereum().BlockChain().State()
 	if err != nil {
