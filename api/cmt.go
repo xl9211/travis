@@ -121,6 +121,24 @@ func (s *CmtRPCService) GetBlockByNumber(height uint64, decodeTx bool) (*ctypes.
 	return block, nil
 }
 
+func (s *CmtRPCService) GetAllAddress() (string, error) {
+	state, err := s.backend.Ethereum().BlockChain().State()
+	if err != nil {
+		return "", err
+	}
+
+	dump := state.RawDump()
+	addresses := make([]string, 0, len(dump.Accounts))
+	for k := range dump.Accounts {
+		addresses = append(addresses, k)
+	}
+
+	data, _ := json.Marshal(addresses)
+	dataString := string(data)
+
+	return dataString, nil
+}
+
 func (s *CmtRPCService) GetBalance(address common.Address) (string, error) {
 	state, err := s.backend.Ethereum().BlockChain().State()
 	if err != nil {
