@@ -154,7 +154,9 @@ func (s *CmtRPCService) GetAccountByAddress(address common.Address) (string, err
 	}
 
 	state.ForEachStorage(address, func(key, val common.Hash) bool {
-		account.Storage[key.Hex()] = val.Hex()
+		_, content, _, _ := rlp.Split(val.GetBytes())
+		realVal := common.BytesToHash(content)
+		account.Storage[key.Hex()] = realVal.Hex()
 		return true
 	})
 
@@ -249,7 +251,7 @@ func (s *CmtRPCService) GetStorage3(address common.Address) (string, error) {
 	state.ForEachStorage(address, func(key, val common.Hash) bool {
 		fmt.Printf("VULCANLABS key: %s value: %s\n", key.Hex(), val.Hex())
 		realVal := state.GetState(address, key)
-		fmt.Printf("VULCANLABS key: %s value: %s real value: %s\n", key.Hex(), val.Hex(), realVal.Hex)
+		fmt.Printf("VULCANLABS key: %s value: %s real value: %s\n", key.Hex(), val.Hex(), realVal.Hex())
 		storage[key.Hex()] = realVal.Hex()
 		return true
 	})
