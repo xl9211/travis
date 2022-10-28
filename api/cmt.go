@@ -154,8 +154,7 @@ func (s *CmtRPCService) GetAccountByAddress(address common.Address) (string, err
 	}
 
 	state.ForEachStorage(address, func(key, val common.Hash) bool {
-		_, content, _, _ := rlp.Split(val.Bytes())
-		realVal := common.BytesToHash(content)
+		realVal := state.GetState(address, key)
 		account.Storage[key.Hex()] = realVal.Hex()
 		return true
 	})
