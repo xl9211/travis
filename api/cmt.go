@@ -154,8 +154,6 @@ func (s *CmtRPCService) GetAccountByAddress(address common.Address) (string, err
 	}
 
 	state.ForEachStorage(address, func(key, val common.Hash) bool {
-		_, content, _, _ := rlp.Split(val.Bytes())
-		val.SetBytes(content)
 		account.Storage[key.Hex()] = val.Hex()
 		return true
 	})
@@ -227,6 +225,32 @@ func (s *CmtRPCService) GetStorage2(address common.Address) (string, error) {
 	state.ForEachStorage(address, func(key, val common.Hash) bool {
 		fmt.Printf("VULCANLABS key: %s value: %s\n", key.Hex(), val.Hex())
 		storage[key.Hex()] = val.Hex()
+		return true
+	})
+
+	fmt.Printf("VULCANLABS Result Address: {%x}\n", address)
+
+	data, _ := json.Marshal(storage)
+	dataString := string(data)
+
+	fmt.Printf("VULCANLABS data: %s\n", dataString)
+
+	return dataString, nil
+}
+
+func (s *CmtRPCService) GetStorage3(address common.Address) (string, error) {
+	state, err := s.backend.Ethereum().BlockChain().State()
+	if err != nil {
+		return "", err
+	}
+
+	fmt.Printf("VULCANLABS Address: {%x}\n", address)
+	storage := make(map[string]string)
+	state.ForEachStorage(address, func(key, val common.Hash) bool {
+		fmt.Printf("VULCANLABS key: %s value: %s\n", key.Hex(), val.Hex())
+		realVal := state.GetState(address, key)
+		fmt.Printf("VULCANLABS key: %s value: %s real value: %s\n", key.Hex(), val.Hex(), realVal.Hex)
+		storage[key.Hex()] = realVal.Hex()
 		return true
 	})
 
