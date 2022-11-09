@@ -125,7 +125,7 @@ func (s *CmtRPCService) GetBlockByNumber(height uint64, decodeTx bool) (*ctypes.
 func (s *CmtRPCService) GetAllAddress() (string, error) {
 	bc := s.backend.Ethereum().BlockChain()
 	state, err := bc.State()
-	tempTrie := state.Database().OpenTrie(bc.CurrentBlock().Root())
+	tempTrie, _ := state.Database().OpenTrie(bc.CurrentBlock().Root())
 	if err != nil {
 		return "", err
 	}
