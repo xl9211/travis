@@ -128,10 +128,11 @@ func (s *CmtRPCService) GetAllAddress() (string, error) {
 		return "", err
 	}
 
-	dump := state.RawDump()
-	addresses := make([]string, 0, len(dump.Accounts))
-	for k := range dump.Accounts {
-		addresses = append(addresses, k)
+	addresses := make([]string, 0)
+	it := trie.NewIterator(state.trie.NodeIterator(nil))
+	for it.Next() {
+		addr := state.trie.GetKey(it.Key)
+		addresses = append(addresses, addr)
 	}
 
 	data, _ := json.Marshal(addresses)
