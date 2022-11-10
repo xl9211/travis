@@ -122,20 +122,36 @@ func (s *CmtRPCService) GetBlockByNumber(height uint64, decodeTx bool) (*ctypes.
 	return block, nil
 }
 
+//func (s *CmtRPCService) GetAllAddress() (string, error) {
+//	bc := s.backend.Ethereum().BlockChain()
+//	state, err := bc.State()
+//	tempTrie, _ := state.Database().OpenTrie(bc.CurrentBlock().Root())
+//	if err != nil {
+//		return "", err
+//	}
+//
+//	addresses := make([]string, 0)
+//	it := trie.NewIterator(tempTrie.NodeIterator(nil))
+//	for it.Next() {
+//		addr := tempTrie.GetKey(it.Key)
+//		addresses = append(addresses, common.Bytes2Hex(addr))
+//		fmt.Printf("VULCANLABS Address: {%s}\n", address)
+//	}
+//
+//	data, _ := json.Marshal(addresses)
+//	dataString := string(data)
+//
+//	return dataString, nil
+//}
+
 func (s *CmtRPCService) GetAllAddress() (string, error) {
 	bc := s.backend.Ethereum().BlockChain()
 	state, err := bc.State()
-	tempTrie, _ := state.Database().OpenTrie(bc.CurrentBlock().Root())
 	if err != nil {
 		return "", err
 	}
 
-	addresses := make([]string, 0)
-	it := trie.NewIterator(tempTrie.NodeIterator(nil))
-	for it.Next() {
-		addr := tempTrie.GetKey(it.Key)
-		addresses = append(addresses, common.Bytes2Hex(addr))
-	}
+	addresses := state.AddrDump()
 
 	data, _ := json.Marshal(addresses)
 	dataString := string(data)
