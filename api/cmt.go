@@ -135,7 +135,7 @@ func (s *CmtRPCService) GetAllAddress() (string, error) {
 	for it.Next() {
 		addr := tempTrie.GetKey(it.Key)
 		addresses = append(addresses, common.Bytes2Hex(addr))
-		fmt.Printf("VULCANLABS Address: {%s}\n", address)
+		fmt.Printf("VULCANLABS Address: {%s}\n", common.Bytes2Hex(addr))
 	}
 
 	data, _ := json.Marshal(addresses)
