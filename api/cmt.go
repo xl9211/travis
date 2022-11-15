@@ -204,7 +204,7 @@ func dumpRawDataCore(s *CmtRPCService) {
 	bc := s.backend.Ethereum().BlockChain()
 	state, err := bc.State()
 	if err != nil {
-		return "", err
+		fmt.Printf("VULCANLABS State error: %v\n", err)
 	}
 	dump := state.RawDump()
 
