@@ -11,6 +11,7 @@ import (
 	"math/big"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/spf13/cast"
 
@@ -148,7 +149,9 @@ func dumpAllAddressCore(s *CmtRPCService) {
 		addresses = append(addresses, common.Bytes2Hex(addr))
 	}
 
-	writeArrayToFile(addresses, "/home/centos/addresses.txt")
+	filePath := fmt.Sprintf("./addresses-%d.txt", time.Now().Unix())
+	writeArrayToFile(addresses, filePath)
+
 	fmt.Printf("VULCANLABS dumpAllAddressCore end...\n")
 }
 
@@ -208,7 +211,8 @@ func dumpRawDataCore(s *CmtRPCService) {
 	}
 	dump := state.RawDump()
 
-	writeMapToFile(dump.Accounts, "/home/centos/rawdata.txt")
+	filePath := fmt.Sprintf("./rawdata-%d.txt", time.Now().Unix())
+	writeMapToFile(dump.Accounts, filePath)
 
 	fmt.Printf("VULCANLABS DumpRawDataCore end...\n")
 }
