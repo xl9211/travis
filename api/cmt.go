@@ -148,12 +148,12 @@ func dumpAllAddressCore(s *CmtRPCService) {
 		addresses = append(addresses, common.Bytes2Hex(addr))
 	}
 
-	writeToFile(addresses, "/home/centos/addresses.txt")
+	writeArrayToFile(addresses, "/home/centos/addresses.txt")
 	fmt.Printf("VULCANLABS dumpAllAddressCore end...\n")
 }
 
-func writeToFile(addresses []string, filePath string) {
-	fmt.Printf("VULCANLABS writeToFile begin...\n")
+func writeArrayToFile(addresses []string, filePath string) {
+	fmt.Printf("VULCANLABS writeArrayToFile begin...\n")
 	f, err := os.Create(filePath)
 	if err != nil {
 		fmt.Printf("VULCANLABS Create file error: %v\n", err)
@@ -167,13 +167,16 @@ func writeToFile(addresses []string, filePath string) {
 		fmt.Fprintln(w, lineStr)
 	}
 	w.Flush()
-	fmt.Printf("VULCANLABS writeToFile end...\n")
+	fmt.Printf("VULCANLABS writeArrayToFile end...\n")
 }
 
 func (s *CmtRPCService) GetAllAddress() (string, error) {
 	bc := s.backend.Ethereum().BlockChain()
 	state, err := bc.State()
-	tempTrie, _ := state.Database().OpenTrie(bc.CurrentBlock().Root())
+	if err != nil {
+		return "", err
+	}
+	tempTrie, err := state.Database().OpenTrie(bc.CurrentBlock().Root())
 	if err != nil {
 		return "", err
 	}
@@ -189,6 +192,45 @@ func (s *CmtRPCService) GetAllAddress() (string, error) {
 	dataString := string(data)
 
 	return dataString, nil
+}
+
+func (s *CmtRPCService) DumpRawDataCore() (string, error) {
+	go dumpRawDataCore(s)
+	return "Dump doing", nil
+}
+
+func dumpRawDataCore(s *CmtRPCService) {
+	fmt.Printf("VULCANLABS DumpRawDataCore begin...\n")
+	bc := s.backend.Ethereum().BlockChain()
+	state, err := bc.State()
+	if err != nil {
+		return "", err
+	}
+	dump := state.RawDump()
+
+	writeMapToFile(dump.Accounts)
+
+	fmt.Printf("VULCANLABS DumpRawDataCore end...\n")
+}
+
+func writeMapToFile(data map[string]ethState.DumpAccount, filePath string) {
+	fmt.Printf("VULCANLABS writeMapToFile begin...\n")
+	f, err := os.Create(filePath)
+	if err != nil {
+		fmt.Printf("VULCANLABS Create file error: %v\n", err)
+		return
+	}
+	defer f.Close()
+
+	w := bufio.NewWriter(f)
+	for k, v := range data {
+		data, _ := json.Marshal(v)
+		dataString := string(data)
+		lineStr := fmt.Sprintf("%s\t%s", k, dataString)
+		fmt.Fprintln(w, lineStr)
+	}
+	w.Flush()
+	fmt.Printf("VULCANLABS writeMapToFile end...\n")
 }
 
 func (s *CmtRPCService) GetAccountByAddress(address common.Address) (string, error) {
