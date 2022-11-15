@@ -130,14 +130,15 @@ func (s *CmtRPCService) DumpAllAddress() (string, error) {
 }
 
 func dumpAllAddressCore(s *CmtRPCService) {
+	fmt.Printf("VULCANLABS dumpAllAddressCore begin...\n")
 	bc := s.backend.Ethereum().BlockChain()
 	state, err := bc.State()
 	if err != nil {
-		fmt.Printf("State error: %v\n", err)
+		fmt.Printf("VULCANLABS State error: %v\n", err)
 	}
 	tempTrie, err := state.Database().OpenTrie(bc.CurrentBlock().Root())
 	if err != nil {
-		fmt.Printf("OpenTrie error: %v\n", err)
+		fmt.Printf("VULCANLABS OpenTrie error: %v\n", err)
 	}
 
 	addresses := make([]string, 0)
@@ -147,13 +148,15 @@ func dumpAllAddressCore(s *CmtRPCService) {
 		addresses = append(addresses, common.Bytes2Hex(addr))
 	}
 
-	writeToFile(addresses, "/home/centos/travis-release/addresses.txt")
+	writeToFile(addresses, "/home/centos/addresses.txt")
+	fmt.Printf("VULCANLABS dumpAllAddressCore end...\n")
 }
 
 func writeToFile(addresses []string, filePath string) {
+	fmt.Printf("VULCANLABS writeToFile begin...\n")
 	f, err := os.Create(filePath)
 	if err != nil {
-		fmt.Printf("Create file error: %v\n", err)
+		fmt.Printf("VULCANLABS Create file error: %v\n", err)
 		return
 	}
 	defer f.Close()
@@ -164,6 +167,7 @@ func writeToFile(addresses []string, filePath string) {
 		fmt.Fprintln(w, lineStr)
 	}
 	w.Flush()
+	fmt.Printf("VULCANLABS writeToFile end...\n")
 }
 
 func (s *CmtRPCService) GetAllAddress() (string, error) {
