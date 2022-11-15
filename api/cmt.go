@@ -208,7 +208,7 @@ func dumpRawDataCore(s *CmtRPCService) {
 	}
 	dump := state.RawDump()
 
-	writeMapToFile(dump.Accounts)
+	writeMapToFile(dump.Accounts, "/home/centos/rawdata.txt")
 
 	fmt.Printf("VULCANLABS DumpRawDataCore end...\n")
 }
