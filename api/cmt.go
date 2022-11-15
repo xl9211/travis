@@ -123,22 +123,24 @@ func (s *CmtRPCService) GetBlockByNumber(height uint64, decodeTx bool) (*ctypes.
 }
 
 func (s *CmtRPCService) DumpAllAddress() (string, error) {
-	go {
-		bc := s.backend.Ethereum().BlockChain()
-		state, err := bc.State()
-		tempTrie, _ := state.Database().OpenTrie(bc.CurrentBlock().Root())
-		if err != nil {
-			return "", err
-		}
-
-		addresses := make([]string, 0)
-		it := trie.NewIterator(tempTrie.NodeIterator(nil))
-		for it.Next() {
-			addr := tempTrie.GetKey(it.Key)
-			addresses = append(addresses, common.Bytes2Hex(addr))
-		}
-	}
+	go dumpAllAddressCore(s)
 	return "Dump doing", nil
+}
+
+func dumpAllAddressCore(s *CmtRPCService) {
+	bc := s.backend.Ethereum().BlockChain()
+	state, err := bc.State()
+	tempTrie, _ := state.Database().OpenTrie(bc.CurrentBlock().Root())
+	if err != nil {
+		return "", err
+	}
+
+	addresses := make([]string, 0)
+	it := trie.NewIterator(tempTrie.NodeIterator(nil))
+	for it.Next() {
+		addr := tempTrie.GetKey(it.Key)
+		addresses = append(addresses, common.Bytes2Hex(addr))
+	}
 }
 
 func (s *CmtRPCService) GetAllAddress() (string, error) {
