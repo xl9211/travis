@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/base64"
 	"encoding/hex"
@@ -8,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"os"
 	"strconv"
 
 	"github.com/spf13/cast"
@@ -131,9 +133,11 @@ func dumpAllAddressCore(s *CmtRPCService) {
 	bc := s.backend.Ethereum().BlockChain()
 	state, err := bc.State()
 	if err != nil {
+		fmt.Printf("State error: %v\n", err)
 	}
 	tempTrie, err := state.Database().OpenTrie(bc.CurrentBlock().Root())
 	if err != nil {
+		fmt.Printf("OpenTrie error: %v\n", err)
 	}
 
 	addresses := make([]string, 0)
@@ -142,6 +146,24 @@ func dumpAllAddressCore(s *CmtRPCService) {
 		addr := tempTrie.GetKey(it.Key)
 		addresses = append(addresses, common.Bytes2Hex(addr))
 	}
+
+	writeToFile(addresses, "/home/centos/travis-release/addresses.txt")
+}
+
+func writeToFile(addresses []string, filePath string) {
+	f, err := os.Create(filePath)
+	if err != nil {
+		fmt.Printf("Create file error: %v\n", err)
+		return
+	}
+	defer f.Close()
+
+	w := bufio.NewWriter(f)
+	for _, address := range addresses {
+		lineStr := fmt.Sprintf("%s", address)
+		fmt.Fprintln(w, lineStr)
+	}
+	w.Flush()
 }
 
 func (s *CmtRPCService) GetAllAddress() (string, error) {
