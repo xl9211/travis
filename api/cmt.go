@@ -130,9 +130,10 @@ func (s *CmtRPCService) DumpAllAddress() (string, error) {
 func dumpAllAddressCore(s *CmtRPCService) {
 	bc := s.backend.Ethereum().BlockChain()
 	state, err := bc.State()
-	tempTrie, _ := state.Database().OpenTrie(bc.CurrentBlock().Root())
 	if err != nil {
-		return "", err
+	}
+	tempTrie, err := state.Database().OpenTrie(bc.CurrentBlock().Root())
+	if err != nil {
 	}
 
 	addresses := make([]string, 0)
