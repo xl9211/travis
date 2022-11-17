@@ -203,18 +203,42 @@ func (s *CmtRPCService) DumpRawDataCore() (string, error) {
 }
 
 func dumpRawDataCore(s *CmtRPCService) {
-	fmt.Printf("VULCANLABS DumpRawDataCore begin...\n")
+	fmt.Printf("VULCANLABS dumpRawDataCore begin...\n")
 	bc := s.backend.Ethereum().BlockChain()
 	state, err := bc.State()
 	if err != nil {
 		fmt.Printf("VULCANLABS State error: %v\n", err)
 	}
-	dump := state.RawDump()
+	tempTrie, err := state.Database().OpenTrie(bc.CurrentBlock().Root())
+	if err != nil {
+		fmt.Printf("VULCANLABS OpenTrie error: %v\n", err)
+	}
+
+	data := make(map[string]ethState.DumpAccount)
+	it := trie.NewIterator(tempTrie.NodeIterator(nil))
+	for it.Next() {
+		address := common.BytesToAddress(tempTrie.GetKey(it.Key))
+
+		account := ethState.DumpAccount{
+			Balance: state.GetBalance(address).String(),
+			Nonce:   state.GetNonce(address),
+			Code:    common.Bytes2Hex(state.GetCode(address)),
+			Storage: make(map[string]string),
+		}
+
+		state.ForEachStorage(address, func(key, val common.Hash) bool {
+			realVal := state.GetState(address, key)
+			account.Storage[key.Hex()] = realVal.Hex()
+			return true
+		})
+
+		data[address] = account
+	}
 
 	filePath := fmt.Sprintf("./rawdata-%d.txt", time.Now().Unix())
-	writeMapToFile(dump.Accounts, filePath)
+	writeMapToFile(data, filePath)
 
-	fmt.Printf("VULCANLABS DumpRawDataCore end...\n")
+	fmt.Printf("VULCANLABS dumpRawDataCore end...\n")
 }
 
 func writeMapToFile(data map[string]ethState.DumpAccount, filePath string) {
@@ -230,7 +254,7 @@ func writeMapToFile(data map[string]ethState.DumpAccount, filePath string) {
 	for k, v := range data {
 		data, _ := json.Marshal(v)
 		dataString := string(data)
-		lineStr := fmt.Sprintf("%s\t%s", k, dataString)
+		lineStr := fmt.Sprintf("%x\t%s", k, dataString)
 		fmt.Fprintln(w, lineStr)
 	}
 	w.Flush()
