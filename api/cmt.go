@@ -232,9 +232,9 @@ func dumpRawDataCore(s *CmtRPCService) {
 			return true
 		})
 
-		data, _ := json.Marshal(account)
-		dataString := string(data)
-		data[address] = dataString
+		accountData, _ := json.Marshal(account)
+		accountString := string(accountData)
+		data[address] = accountString
 	}
 
 	filePath := fmt.Sprintf("./rawdata-%d.txt", time.Now().Unix())
