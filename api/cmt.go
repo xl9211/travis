@@ -214,6 +214,7 @@ func dumpRawDataCore(s *CmtRPCService) {
 		fmt.Printf("VULCANLABS OpenTrie error: %v\n", err)
 	}
 
+	count := 0
 	data := make(map[common.Address]string)
 	it := trie.NewIterator(tempTrie.NodeIterator(nil))
 	for it.Next() {
@@ -235,6 +236,11 @@ func dumpRawDataCore(s *CmtRPCService) {
 		accountData, _ := json.Marshal(account)
 		accountString := string(accountData)
 		data[address] = accountString
+
+		if count%100 == 0 {
+			fmt.Printf("VULCANLABS dumpRawDataCore %d\n", count)
+		}
+		count++
 	}
 
 	filePath := fmt.Sprintf("./rawdata-%d.txt", time.Now().Unix())
