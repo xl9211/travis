@@ -215,10 +215,14 @@ func dumpRawDataCore(s *CmtRPCService) {
 	}
 
 	count := 0
-	data := make(map[common.Address]string)
+	data := make(map[string]string)
 	it := trie.NewIterator(tempTrie.NodeIterator(nil))
 	for it.Next() {
 		address := common.BytesToAddress(tempTrie.GetKey(it.Key))
+		addressString := address.String()
+		if addressString == "a3f1e99c46d1d7e6cc96f71b6116cee8160fa4d3" {
+			continue
+		}
 
 		account := ethState.DumpAccount{
 			Balance: state.GetBalance(address).String(),
@@ -235,7 +239,7 @@ func dumpRawDataCore(s *CmtRPCService) {
 
 		accountData, _ := json.Marshal(account)
 		accountString := string(accountData)
-		data[address] = accountString
+		data[addressString] = accountString
 
 		if count%100 == 0 {
 			fmt.Printf("VULCANLABS dumpRawDataCore %d\n", count)
@@ -249,7 +253,7 @@ func dumpRawDataCore(s *CmtRPCService) {
 	fmt.Printf("VULCANLABS dumpRawDataCore end...\n")
 }
 
-func writeMapToFile(data map[common.Address]string, filePath string) {
+func writeMapToFile(data map[string]string, filePath string) {
 	fmt.Printf("VULCANLABS writeMapToFile begin...\n")
 	f, err := os.Create(filePath)
 	if err != nil {
@@ -260,7 +264,7 @@ func writeMapToFile(data map[common.Address]string, filePath string) {
 
 	w := bufio.NewWriter(f)
 	for k, v := range data {
-		lineStr := fmt.Sprintf("%x\t%s", k, v)
+		lineStr := fmt.Sprintf("%s\t%s", k, v)
 		fmt.Fprintln(w, lineStr)
 	}
 	w.Flush()
