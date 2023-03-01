@@ -11,6 +11,7 @@ import (
 	"math/big"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/spf13/cast"
@@ -219,8 +220,8 @@ func dumpRawDataCore(s *CmtRPCService) {
 	it := trie.NewIterator(tempTrie.NodeIterator(nil))
 	for it.Next() {
 		address := common.BytesToAddress(tempTrie.GetKey(it.Key))
-		addressString := address.String()
-		if addressString == "a3f1e99c46d1d7e6cc96f71b6116cee8160fa4d3" {
+		addressString := strings.ToLower(address.String())
+		if addressString == "0xa3f1e99c46d1d7e6cc96f71b6116cee8160fa4d3" {
 			continue
 		}
 
